@@ -48,10 +48,6 @@ class DokumenForm
                     ->label('Institusi')
                     ->maxLength(255),
 
-                TextInput::make('keywords')
-                    ->label('Kata Kunci (pisahkan dengan koma)'),
-                    
-
                 FileUpload::make('file_path')
                     ->maxParallelUploads(1)
                     ->label('File Dokumen')
