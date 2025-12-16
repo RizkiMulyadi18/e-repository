@@ -27,19 +27,25 @@ class DokumensTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->striped()                                   // zebra rows
+            ->paginated([10, 25, 50])                     // opsi page size
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 //
                 TextColumn::make('title')
                     ->label('Judul Dokumen')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('category')
                     ->label('Kategori')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('year')
                     ->label('Tahun')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('authors')
                     ->label('Penulis')
@@ -48,8 +54,13 @@ class DokumensTable
 
                 TextColumn::make('institution')
                     ->label('Institusi')
-                    ->limit(30),
-
+                    ->limit(30)
+                    ->searchable(),
+                    
+                TextColumn::make('user.name')
+                    ->label('Diunggah Oleh')
+                    ->sortable()
+                    ->searchable(),
             ])
             ->filters([
                 TrashedFilter::make()

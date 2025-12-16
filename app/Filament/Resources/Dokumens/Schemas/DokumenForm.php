@@ -46,7 +46,8 @@ class DokumenForm
 
                 TextInput::make('institution')
                     ->label('Institusi')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->required(),
 
                 FileUpload::make('file_path')
                     ->maxParallelUploads(1)
