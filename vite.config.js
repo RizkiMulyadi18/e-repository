@@ -8,7 +8,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
-                'resources/css/Filament/admin/theme.css', // ✅
+                'resources/css/filament/admin/theme.css', // ✅
             ],
             refresh: true,
         }),

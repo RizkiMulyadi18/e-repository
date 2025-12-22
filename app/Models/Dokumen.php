@@ -13,13 +13,13 @@ class Dokumen extends Model
     protected $table = 'dokumens';
 
     protected $fillable = [
-        'title',
-        'category',
-        'year',
-        'authors',
-        'institution',
-        'keywords',
-        'file_path',
+    'title',
+    'category',
+    'year',
+    'authors',
+    'institution',
+    'file_path',
+    'user_id',
         
     ];
 

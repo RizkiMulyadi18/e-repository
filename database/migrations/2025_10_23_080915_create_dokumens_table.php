@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedSmallInteger('year');   // Tahun dokumen
             $table->string('authors');              // Penulis
             $table->string('institution')->nullable(); // Institusi (opsional)
+            $table->text('abstrak')->nullable();
             $table->text('keywords')->nullable();   // Kata kunci untuk fitur search
             $table->string('file_path');            // Lokasi file dokumen (hasil upload)
 
