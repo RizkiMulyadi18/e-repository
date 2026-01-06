@@ -70,6 +70,11 @@
                     @if ($settings->site_logo)
                         <img src="{{ asset('storage/' . $settings->site_logo) }}" alt="Logo Aplikasi"
                             class="h-10 w-auto object-contain">
+                    @else
+                        <div
+                            class="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                            <span class="material-symbols-outlined text-2xl">school</span>
+                        </div>
                     @endif
 
                     <h2 class="text-primary text-xl font-bold tracking-tight">
