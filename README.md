@@ -108,7 +108,7 @@ Pastikan sudah terinstall:
 
 ```bash
 # Clone repository
-git clone https://github.com/RizkiMulyadi18/e-repository.git
+git clone https://github.com/muhfikry/a3prjk03.git
 cd e-repository
 
 # Install dependencies
