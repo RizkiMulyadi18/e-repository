@@ -109,7 +109,7 @@ Pastikan sudah terinstall:
 ```bash
 # Clone repository
 git clone https://github.com/muhfikry/a3prjk03.git
-cd e-repository
+cd a3prjk03
 
 # Install dependencies
 composer install
