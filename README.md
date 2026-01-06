@@ -15,25 +15,53 @@ Sistem ini dikembangkan untuk membantu institusi akademik, khususnya Program Stu
 
 ---
 
-## 🧩 Fitur Utama
+Fitur Utama
 
-### 📁 Manajemen Dokumen
-- Upload dokumen dengan metadata (judul, kategori, tahun, penulis, institusi).
-- Fitur pencarian dan filter.
-- Soft Delete (Recycle Bin): Pulihkan atau hapus permanen dokumen.
-- Menampilkan informasi pengguna yang mengupload dokumen.
+Manajemen Dokumen
 
-### 👤 Manajemen Pengguna *(Admin Only)*
-- Tambah pengguna baru.
-- Atur peran pengguna: **Admin** dan **Editor**.
-- Reset password pengguna.
-- Admin dapat melihat semua pengguna.
+Upload file PDF dengan metadata lengkap: judul, slug unik, abstrak, penulis, tahun, institusi, status (draft/published/rejected) dan kategori
 
-### 🔐 Kontrol Akses
-- Admin: akses penuh ke semua fitur.
-- Editor: hanya dapat mengelola dokumen.
-- Menu Pengguna hanya terlihat untuk Admin.
+.
 
+Setiap dokumen memiliki hubungan dengan kategori dan user serta mendukung soft delete dan kolom user_id untuk pencatatan editor
+
+.
+
+Fitur unduh dokumen dengan perhitungan jumlah download.
+
+Manajemen Kategori
+
+Tambah, edit dan hapus kategori dengan atribut nama, slug unik dan warna badge (primary, info, success, warning, danger, gray)
+.
+
+Kategori terkait dengan dokumen secara relasi satu-ke-banyak.
+
+Manajemen Pengguna
+
+Peran admin dan editor ditentukan oleh kolom role pada tabel users
+.
+
+Admin mempunyai akses penuh ke semua modul, sedangkan editor hanya boleh mengelola dokumen dan kategori
+.
+
+Mendukung fungsi soft delete pada user sehingga data tidak langsung hilang.
+
+Halaman Pengaturan
+
+Menggunakan spatie/laravel-settings untuk menyimpan konfigurasi aplikasi, seperti nama situs, logo, footer, status aktif dan tema warna
+.
+
+Migrasi tambahan menambahkan teks footer deskriptif
+ serta alamat kampus, email dan nomor telepon
+.
+
+Dashboard Statistik & Widget
+
+Widget Stats Overview menampilkan statistik penting seperti total dokumen, jumlah dokumen menunggu review, total kategori, total unduhan (kolom downloads) dan jumlah pengguna
+.
+
+Widget Latest Dokumen menampilkan lima dokumen terbaru beserta judul, penulis, status dan waktu unggah serta menyediakan tombol cepat untuk mereview
+.
 ---
 
 ## 🏗️ Teknologi yang Digunakan
@@ -55,8 +83,9 @@ Pastikan sudah terinstall: PHP 8.4.13, Composer, Node.js, dan MySQL.
 
 ```bash
 # Clone repository
-git clone https://github.com/USERNAME/NAMA_REPO.git
-cd NAMA_REPO
+git clone https://github.com/RizkiMulyadi18/e-repository.git
+cd e-repository
+
 
 # Install dependencies
 composer install
@@ -68,7 +97,11 @@ cp .env.example .env
 php artisan key:generate
 
 # Migrasi database & seeder
-php artisan migrate --seed
+php artisan migrate
+php artisan db:seed   # opsional: seeder untuk data awal (user admin/editor)
+
+# Buat symlink ke direktori penyimpanan publik untuk upload dokumen
+php artisan storage:link
 
 # Jalankan server
 php artisan serve
