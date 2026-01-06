@@ -1,119 +1,170 @@
 <!DOCTYPE html>
-<html lang="id">
+
+<html class="light" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Repository - Universitas Malikussaleh</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-    </style>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    @php
+        $settings = app(\App\Settings\GeneralSettings::class);
+        // Jika ada logo upload, pakai itu. Jika tidak, pakai favicon bawaan Laravel
+        $favicon = $settings->site_logo ? asset('storage/' . $settings->site_logo) : asset('favicon.ico');
+    @endphp
+    <link rel="icon" href="{{ $favicon }}">
+    <title>{{ $settings->site_name }}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet" />
+    <!-- Material Symbols -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1e3b8a", // Deep Navy Blue
+                        accent: "#f59e0b", // Golden Amber
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#121620",
+                    },
+                    fontFamily: {
+                        display: ["Lexend", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                        lg: "2rem",
+                        xl: "3rem",
+                        full: "9999px",
+                    },
+                },
+            },
+        };
+    </script>
 </head>
+@php
+    $settings = app(\App\Settings\GeneralSettings::class);
+@endphp
 
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body
+    class="bg-background-light dark:bg-background-dark text-[#121317] font-display overflow-x-hidden flex flex-col min-h-screen">
+    @if (app(\App\Settings\GeneralSettings::class)->site_active)
+        <nav
+            class="sticky top-0 relative z-[100] w-full bg-white/95 backdrop-blur-sm border-b border-[#f1f1f4] shadow-sm">
+            <div class="px-4 sm:px-10 lg:px-40 py-4 flex items-center justify-between max-w-[1440px] mx-auto">
 
-    <nav class="bg-white border-b border-gray-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                    <svg class="w-8 h-8 text-blue-800 group-hover:text-blue-600 transition" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.747 0-3.332.477-4.5 1.253" />
-                    </svg>
-                    <span class="font-bold text-xl text-blue-900 tracking-tight group-hover:text-blue-700 transition">
-                        E-Repository <span class="font-light">Unimal</span>
-                    </span>
+                @php
+                    $settings = app(\App\Settings\GeneralSettings::class);
+                @endphp
+
+                <a class="flex items-center gap-3 group" href="/">
+                    @if ($settings->site_logo)
+                        <img src="{{ asset('storage/' . $settings->site_logo) }}" alt="Logo Aplikasi"
+                            class="h-10 w-auto object-contain">
+                    @endif
+
+                    <h2 class="text-primary text-xl font-bold tracking-tight">
+                        {{ $settings->site_name }}
+                    </h2>
                 </a>
 
-                <div>
-                    <a href="/admin"
-                        class="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-lg text-blue-600 bg-white hover:bg-blue-50 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                        </svg>
-                        Login Admin
+                <div class="flex items-center gap-4">
+                    <a href="/admin" title="Login Admin"
+                        class="flex items-center justify-center w-10 h-10 rounded-full bg-slate-50 text-slate-600 border border-slate-100 hover:bg-white hover:text-primary hover:shadow-md transition-all duration-300">
+                        <span class="material-symbols-outlined text-[20px]">login</span>
                     </a>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <main class="flex-grow">
         @yield('content')
-    </main>
+        <!-- Footer -->
+        <footer class="bg-[#1e293b] text-slate-300 py-10">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-10 lg:px-40">
 
-    <footer class="mt-auto bg-gradient-to-b from-slate-900 to-slate-950 text-white">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid gap-10 py-10 sm:grid-cols-2 sm:items-start">
-                {{-- Kiri: Brand --}}
-                <div class="text-left">
-                    <h3 class="text-xl font-semibold tracking-tight">E-Repository Unimal</h3>
+                <div class="flex flex-col md:flex-row justify-between gap-8 mb-8">
 
-                    <p class="mt-3 max-w-md text-sm leading-relaxed text-slate-300">
-                        Platform arsip karya ilmiah mahasiswa dan dosen.<br>
-                        Mudah dicari, rapi disimpan, cepat diakses.
-                    </p>
+                    <div class="max-w-md"> @php
+                        $settings = app(\App\Settings\GeneralSettings::class);
+                    @endphp
 
-                    <div
-                        class="mt-5 inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs text-slate-300">
-                        <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                        <span>Online</span>
-                        <span class="text-slate-500">•</span>
-                        <span>Terbaru setiap hari</span>
+                        <a class="flex items-center gap-3 group mb-4" href="/">
+                            @if ($settings->site_logo)
+                                <img src="{{ asset('storage/' . $settings->site_logo) }}" alt="Logo Aplikasi"
+                                    class="h-10 w-auto object-contain hover:scale-105 transition-transform duration-300">
+                            @else
+                                <span class="material-symbols-outlined text-3xl text-white">school</span>
+                            @endif
+
+                            <span class="font-bold text-xl text-white">{{ $settings->site_name }}</span>
+                        </a>
+
+                        <p class="text-sm leading-relaxed text-slate-400">
+                            {{ $settings->footer_text }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <h4 class="text-white font-bold mb-4">Kontak</h4>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-slate-400 text-[20px]">location_on</span>
+                                <span>{{ $settings->site_address }}</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-slate-400 text-[20px]">mail</span>
+                                <a href="mailto:{{ $settings->site_email }}"
+                                    class="hover:text-white transition-colors">{{ $settings->site_email }}</a>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-slate-400 text-[20px]">call</span>
+
+                                @php
+                                    // 1. Ambil nomor asli dari database
+                                    $phoneRaw = $settings->site_phone;
+
+                                    // 2. Hapus semua karakter selain angka (spasi, strip, kurung, +)
+                                    $phoneClean = preg_replace('/[^0-9]/', '', $phoneRaw);
+
+                                    // 3. Jika diawali angka '0', ganti dengan '62' (Kode Negara Indonesia)
+                                    if (substr($phoneClean, 0, 1) == '0') {
+                                        $phoneClean = '62' . substr($phoneClean, 1);
+                                    }
+                                @endphp
+
+                                <a href="https://wa.me/{{ $phoneClean }}" target="_blank"
+                                    class="hover:text-white transition-colors">
+                                    {{ $settings->site_phone }}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
-                {{-- Kanan: Kontak --}}
-                <div class="text-left">
-                    <h3 class="text-sm font-semibold text-white/90">Kontak Pengelola</h3>
-
-                    <p class="mt-3 max-w-md text-sm leading-relaxed text-slate-300">
-                        Menyediakan informasi kontak pengelola repositori untuk pertanyaan atau permintaan data.
+                <div class="border-t border-slate-700 pt-6">
+                    <p class="text-sm text-slate-500">
+                        {{ $settings->site_footer ?? 'Copyright © 2026 Universitas Konoha' }}
                     </p>
-
-                    <dl class="mt-5 space-y-3 text-sm">
-                        <div class="grid grid-cols-[72px_1fr] items-start gap-3">
-                            <dt class="text-slate-400">Email</dt>
-                            <dd>
-                                <a href="mailto:repo@unimal.ac.id" class="text-slate-200 hover:text-white">
-                                    repo@unimal.ac.id
-                                </a>
-                            </dd>
-                        </div>
-
-                        <div class="grid grid-cols-[72px_1fr] items-start gap-3">
-                            <dt class="text-slate-400">WA</dt>
-                            <dd>
-                                <a href="https://wa.me/6281265409598?text=Halo%20Admin%20E-Repository%2C%20saya%20ingin%20bertanya..."
-                                    target="_blank" rel="noopener" class="text-slate-200 hover:text-white">
-                                    +62 812-6540-9598
-                                </a>
-                            </dd>
-                        </div>
-
-                        <div class="grid grid-cols-[72px_1fr] items-start gap-3">
-                            <dt class="text-slate-400">Alamat</dt>
-                            <dd class="text-slate-200">
-                                FEB Universitas Malikussaleh<br>
-                                Aceh Utara, Indonesia
-                            </dd>
-                        </div>
-                    </dl>
                 </div>
-            </div>
 
-            {{-- Garis + Copyright --}}
-            <div class="border-t border-white/10 py-5 text-center text-xs text-slate-400">
-                © {{ date('Y') }} Universitas Malikussaleh. All rights reserved.
             </div>
+        </footer>
+    @else
+        <div class="h-screen w-full flex flex-col items-center justify-center bg-gray-100">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Sedang Dalam Perbaikan</h1>
+            <p class="text-gray-600">Mohon maaf, website sedang kami update. Silakan kembali lagi nanti.</p>
         </div>
-    </footer>
+
+    @endif
 </body>
 
 </html>

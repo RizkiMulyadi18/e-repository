@@ -2,28 +2,46 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles;
+    use SoftDeletes;
 
-    protected $fillable = ['name','email','password','role'];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed', // v10+: otomatis hash ketika di-set
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
     ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+        ];
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function dokumens(): HasMany
+    {
+        return $this->hasMany(Dokumen::class);
+    }
 
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
-    }
-
-    public function isEditor(): bool
-    {
-        return $this->role === 'editor';
     }
 }

@@ -2,13 +2,10 @@
 
 namespace App\Filament\Resources\Dokumens\Tables;
 
-use App\Models\Post;
 use App\Models\Dokumen;
-use Filament\Tables\Actions;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\BulkActionGroup;
@@ -16,79 +13,136 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Support\Facades\Storage;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Actions\ForceDeleteBulkAction;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Columns\Column; // <--- Tambahkan ini
 
 class DokumensTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->striped()                                   // zebra rows
-            ->paginated([10, 25, 50])                     // opsi page size
-            ->defaultSort('created_at', 'desc')
             ->columns([
-                //
                 TextColumn::make('title')
-                    ->label('Judul Dokumen')
+                    ->label('Judul')
+                    ->searchable()
+                    ->wrap() // <--- TAMBAHKAN INI (Agar teks panjang turun ke bawah)
+                    ->grow(true) // (Opsional) Memberikan porsi lebar paling banyak ke kolom ini
                     ->sortable()
-                    ->searchable(),
+                    ->limit(40),
 
-                TextColumn::make('category')
+                TextColumn::make('category.name')
                     ->label('Kategori')
-                    ->sortable()
-                    ->searchable(),
+                    ->wrap()
+                    ->sortable(),
+
+                TextColumn::make('author')
+                    ->label('Penulis')
+                    ->searchable()
+                    ->sortable(),
 
                 TextColumn::make('year')
                     ->label('Tahun')
-                    ->sortable()
-                    ->searchable(),
+                    ->sortable(),
 
-                TextColumn::make('authors')
-                    ->label('Penulis')
-                    ->limit(30)
-                    ->searchable(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state) => match ($state) {
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        default => $state,
+                    })
+                    ->color(fn(string $state) => match ($state) {
+                        'draft' => 'warning',
+                        'published' => 'success',
+                        default => 'gray',
+                    })
+                    ->sortable(),
 
-                TextColumn::make('institution')
-                    ->label('Institusi')
-                    ->limit(30)
-                    ->searchable(),
-                    
                 TextColumn::make('user.name')
-                    ->label('Diunggah Oleh')
-                    ->sortable()
-                    ->searchable(),
+                    ->label('Diunggah oleh')
+                    ->searchable()
+                    ->badge()
+                    ->color(fn($record): string => match ($record->user->role) {
+                        // Cek kolom 'role' milik User terkait
+                        'admin'  => 'danger',  // Role Admin -> Merah
+                        'editor' => 'info',    // Role Editor -> Biru
+                        default  => 'gray',    // Role lain -> Abu-abu
+                    })
+                    ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->since() // Tampil sebagai "2 hours ago"
+                    ->label('Waktu'),
+            ])
+            // 2. Tambahkan Tombol Export di Header (Atas Tabel)
+            ->headerActions([
+                ExportAction::make()
+                    ->label('Ekspor Excel')
+                    ->color('success') // Warna hijau
+                    ->exports([
+                        ExcelExport::make()
+                            ->withFilename(fn($resource) => $resource::getModelLabel() . '-' . date('Y-m-d'))
+                            ->withColumns([
+                                // Kita definisikan satu per satu agar pasti berhasil
+                                Column::make('title')->heading('Judul Dokumen'),
+                                Column::make('author')->heading('Penulis'),
+                                Column::make('year')->heading('Tahun'),
+                                Column::make('category.name')->heading('Kategori'), // Relasi ke tabel kategori
+                                Column::make('status')->heading('Status'),
+                                Column::make('downloads')->heading('Jumlah Unduhan'),
+                            ]),
+                    ]),
+
+                // Tombol 2: PDF (BARU)
+                Action::make('cetak_pdf')
+                    ->label('Cetak Laporan PDF')
+                    ->icon('heroicon-o-printer')
+                    ->color('warning') // Warna Oranye/Kuning
+                    ->url(route('laporan.cetak'))
+                    ->openUrlInNewTab(), // Buka di tab baru agar tidak close admin
             ])
             ->filters([
-                TrashedFilter::make()
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                    ]),
+
+                SelectFilter::make('year')
+                    ->label('Tahun')
+                    ->options(
+                        fn() => Dokumen::query()
+                            ->select('year')
+                            ->distinct()
+                            ->orderByDesc('year')
+                            ->pluck('year', 'year')
+                            ->toArray()
+                    ),
+
+                SelectFilter::make('category_id')
+                    ->label('Kategori')
+                    ->relationship('category', 'name'),
+
+                TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make()
-                    ->visible(fn (Dokumen $record) => !$record->trashed()),
-                DeleteAction::make()
-                    ->visible(fn (Dokumen $record) => ! $record->trashed()),
-                ViewAction::make(),
-                RestoreAction::make()
-                    ->visible(fn (Dokumen $record) => $record->trashed()),
-                ForceDeleteAction::make()
-                    ->requiresConfirmation()
-                    ->visible(fn (Dokumen $record) => $record->trashed()),
+                EditAction::make(),
+                DeleteAction::make(),
+                RestoreAction::make(),
+                ForceDeleteAction::make(),
             ])
-
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make()->requiresConfirmation(),
                 ]),
-
-            ])
-            ->modifyQueryUsing(
-                fn (Builder $query) => $query->withoutGlobalScopes([SoftDeletingScope::class])
-            );
-            
+            ]);
     }
 }

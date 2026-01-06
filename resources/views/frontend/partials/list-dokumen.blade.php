@@ -3,7 +3,7 @@
         @foreach ($dokumens as $item)
             <div
                 class="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div class="p-6 flex-grow relative">
+                <div class="p-6 grow relative">
                     <div class="absolute top-0 inset-x-0 h-1 bg-blue-600 group-hover:bg-amber-500 transition-colors">
                     </div>
 
@@ -39,7 +39,7 @@
 
                     <div class="mt-6 pt-4 border-t border-gray-50 flex items-center">
                         <div
-                            class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold">
+                            class="shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold">
                             {{ substr($item->author, 0, 1) }} </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ $item->authors }}</p>

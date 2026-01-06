@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\Dokumens\Schemas;
 
+use Illuminate\Support\Str;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\Select;
+use Illuminate\Validation\Rules\Unique;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Utilities\Set;
 
 class DokumenForm
 {
@@ -15,54 +19,104 @@ class DokumenForm
     {
         return $schema
             ->components([
-                //
-                TextInput::make('title')
-                    ->label('Judul Dokumen')
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Informasi Utama')
+                    ->compact()
+                    ->description('')
+                    ->schema([
+                        Textarea::make('title')
+                            ->label('Judul')
+                            ->required()
+                            ->maxLength(500)
+                            ->rows(3)
+                            ->autosize()
+                            ->columnSpan('full')
+                            ->live(onBlur: true)
+                            // 1. Saat form dibuka, ubah tampilan jadi rapi
+                            ->formatStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            // 2. PENTING: Saat tombol Simpan ditekan, ubah data jadi rapi sebelum masuk database
+                            ->dehydrateStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            ->afterStateUpdated(function (?string $state, Set $set) {
+                                $set('slug', Str::slug($state ?? ''));
+                            }),
 
-                Select::make('category')
-                    ->label('Kategori')
-                    ->options([
-                        'Skripsi' => 'Skripsi',
-                        'Tesis' => 'Tesis',
-                        'Jurnal' => 'Jurnal',
-                        'Laporan Penelitian' => 'Laporan Penelitian',
+                        Textarea::make('author')
+                            ->label('Penulis')
+                            ->required()
+                            ->rows(2)
+                            ->autosize() 
+                            ->columnSpan('full')   
+                            // 1. Saat form dibuka, ubah tampilan jadi rapi
+                            ->formatStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            // 2. PENTING: Saat tombol Simpan ditekan, ubah data jadi rapi sebelum masuk database
+                            ->dehydrateStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            ->maxLength(150),
+                        
+                        Textarea::make('institution')
+                            ->label('Institusi')
+                            ->required()
+                            ->rows(2)
+                            ->autosize() 
+                            ->columnSpan('full')
+                            // 1. Saat form dibuka, ubah tampilan jadi rapi
+                            ->formatStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            // 2. PENTING: Saat tombol Simpan ditekan, ubah data jadi rapi sebelum masuk database
+                            ->dehydrateStateUsing(fn(?string $state) => ucwords(strtolower($state)))
+                            ->maxLength(200),
+
+                        Select::make('category_id')
+                            ->label('Kategori')
+                            ->relationship('category', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->columnSpanFull(),
+
+                        TextInput::make('year')
+                            ->label('Tahun Terbit')
+                            ->required()
+                            ->minValue(1900)
+                            ->maxValue((int) now()->format('Y') + 1)
+                            ->numeric(),
+
+                        Select::make('status')
+                            ->label('Status')
+                            ->required()
+                            ->options([
+                                'draft' => 'Draft',
+                                'published' => 'Published',
+                            ])
+                            ->default('draft'),
+
+                        FileUpload::make('file_path')
+                            ->label('File PDF')
+                            ->required()
+                            ->disk('public')
+                            ->directory('dokumen')
+                            ->preserveFilenames()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(30720) // 30 MB (dalam KB)
+                            ->columnSpanFull(),
                     ])
-                    ->required()
-                    ->searchable(),
+                    ->columns(2),
 
-                TextInput::make('year')
-                    ->label('Tahun')
-                    ->numeric()
-                    ->minValue(1900)
-                    ->maxValue(intval(date('Y')) + 1)
-                    ->required(),
+                Section::make('Metadata')
+                    ->description('Informasi tambahan tentang dokumen.')
+                    ->schema([
+                        TextInput::make('slug')
+                            ->label('Kata Kunci')
+                            ->required()
+                            ->maxLength(280)
+                            ->unique(
+                                ignoreRecord: true,
+                                modifyRuleUsing: fn(Unique $rule) => $rule->whereNull('deleted_at')
+                            )
+                            ->columnSpanFull(),
 
-                TextInput::make('authors')
-                    ->label('Penulis')
-                    ->required(),
-                    
-
-                TextInput::make('institution')
-                    ->label('Institusi')
-                    ->maxLength(255)
-                    ->required(),
-
-                FileUpload::make('file_path')
-                    ->maxParallelUploads(1)
-                    ->label('File Dokumen')
-                    ->disk('public') 
-                    ->directory('documents')
-                    ->visibility('public')
-                    ->acceptedFileTypes([
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        RichEditor::make('abstract')
+                            ->label('Abstrak')
+                            ->columnSpanFull(),
                     ])
-                    ->maxSize(10240)
-                    ->required()
-                    
+                    ->columns(2),
             ]);
     }
 }

@@ -3,39 +3,49 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Facades\Auth; // ⬅️ tambahkan ini
+use Illuminate\Support\Facades\Auth;
 
 class Dokumen extends Model
 {
-    use HasFactory, SoftDeletes;
-    protected $table = 'dokumens';
+    use SoftDeletes;
 
     protected $fillable = [
-    'title',
-    'category',
-    'year',
-    'authors',
-    'institution',
-    'file_path',
-    'user_id',
-        
+        'title',
+        'slug',
+        'abstract',
+        'file_path',
+        'author',
+        'year',
+        'institution',
+        'status',
+        'category_id',
+        'user_id',
     ];
 
-     public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class);
-    }
     protected static function booted(): void
     {
-        static::creating(function (Dokumen $doc) {
+        static::creating(function (Dokumen $dokumen) {
             if (Auth::check()) {
-                $doc->user_id = Auth::id(); // ✅ otomatis isi uploader
+                $dokumen->user_id = Auth::id();
+            }
+        });
+
+        static::updating(function (Dokumen $dokumen) {
+        if (Auth::check()) {
+            $dokumen->user_id = Auth::id();
             }
         });
     }
-     protected $casts = [
-        'year' => 'integer',
-    ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
