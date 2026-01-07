@@ -108,8 +108,7 @@ Pastikan sudah terinstall:
 
 ```bash
 # Clone repository
-git clone https://github.com/muhfikry/a3prjk03.git
-cd a3prjk03
+git clone https://github.com/RizkiMulyadi18/e-repository.git
 
 # Install dependencies
 composer install
