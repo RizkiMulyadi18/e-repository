@@ -2,14 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+// Import Filament
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
+class User extends Authenticatable implements FilamentUser
 {
-    use SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -27,6 +34,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 
@@ -40,8 +48,16 @@ class User extends Authenticatable
         return $this->hasMany(Dokumen::class);
     }
 
+    // Helper untuk cek admin (tetap berguna untuk logic lain)
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    // --- PERUBAHAN PENTING DI SINI ---
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Izinkan masuk jika role adalah 'admin' ATAU 'editor'
+        return in_array($this->role, ['admin', 'editor']);
     }
 }
