@@ -12,9 +12,9 @@ class UserSeeder extends Seeder
     {
         // ADMIN
         User::updateOrCreate(
+            ['email' => 'rizki@gmail.com'],
             [   
                 'name' => 'Rizki',
-                'email' => 'rizki@gmail.com',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
             ]

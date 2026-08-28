@@ -1,83 +1,141 @@
 @extends('layouts.frontend')
 
+@section('title', $dokumen->title . ' — ' . (app(\App\Settings\GeneralSettings::class)->site_name ?? 'E-Repository'))
+
 @section('content')
-<div class="bg-gray-50/50 min-h-screen py-12">
+<div class="min-h-screen py-8 sm:py-12 bg-[#FAF7EE] pattern-grid">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li class="inline-flex items-center">
-                    <a href="{{ route('home') }}" class="inline-flex items-center text-gray-500 hover:text-blue-600">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-                        Beranda
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-                        <span class="ml-1 text-gray-500 md:ml-2 truncate max-w-[200px]">{{ $dokumen->title }}</span>
-                    </div>
-                </li>
-            </ol>
+        
+        <!-- Neobrutalist Breadcrumb -->
+        <nav class="flex items-center gap-2 mb-8 text-xs font-black uppercase tracking-wider" aria-label="Breadcrumb">
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-1 px-3 py-1.5 bg-white border-2 border-black rounded-xl shadow-brutal-sm hover:-translate-y-0.5 transition-all text-black">
+                <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+                <span>Beranda</span>
+            </a>
+            <span class="text-black font-bold">/</span>
+            <span class="px-3 py-1.5 bg-saweria text-black border-2 border-black rounded-xl shadow-brutal-sm truncate max-w-[200px] sm:max-w-md">
+                {{ $dokumen->title }}
+            </span>
         </nav>
 
-        <div class="bg-white shadow-xl rounded-3xl overflow-hidden border border-gray-100">
-            <div class="lg:grid lg:grid-cols-3 lg:gap-0">
-                <div class="bg-slate-50 px-6 py-8 lg:p-10 lg:border-r border-gray-100 lg:col-span-1">
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
-                        {{ $dokumen->category->name ?? 'Umum' }}
+        <!-- Main Detail Grid Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Document Metadata & Download (5 cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Main Info Card -->
+                <div class="bg-white border-3 border-black rounded-3xl shadow-brutal-lg p-6 sm:p-8 space-y-6">
+                    
+                    <!-- Badges -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1.5 bg-saweria text-black text-xs font-black uppercase rounded-xl border-2 border-black shadow-brutal-sm">
+                            {{ $dokumen->category->name ?? 'Umum' }}
                         </span>
-                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">
-                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            {{ $dokumen->year }}
+                        <span class="px-3 py-1.5 bg-mint text-black text-xs font-black rounded-xl border-2 border-black shadow-brutal-sm flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                            <span>Tahun {{ $dokumen->year }}</span>
                         </span>
                     </div>
 
-                    <h1 class="text-2xl font-extrabold text-gray-900 leading-tight mb-6">
+                    <!-- Title -->
+                    <h1 class="text-xl sm:text-2xl font-black text-black leading-snug">
                         {{ $dokumen->title }}
                     </h1>
 
-                    <div class="space-y-4 mb-8">
-                        <div>
-                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Penulis</h3>
-                            <p class="mt-1 text-lg font-medium text-gray-900 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <!-- Author & Institution Info Boxes -->
+                    <div class="space-y-3 pt-2">
+                        <div class="p-3.5 bg-[#FAF7EE] border-2 border-black rounded-2xl shadow-brutal-sm space-y-1">
+                            <div class="flex items-center gap-1.5 text-coral text-xs font-black uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[18px]">person</span>
+                                <span>Penulis / Peneliti</span>
+                            </div>
+                            <p class="text-sm sm:text-base font-extrabold text-black pl-6">
                                 {{ $dokumen->author }}
                             </p>
                         </div>
-                        <div>
-                            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Institusi</h3>
-                            <p class="mt-1 text-base text-gray-900 flex items-center">
-                                <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+
+                        <div class="p-3.5 bg-[#FAF7EE] border-2 border-black rounded-2xl shadow-brutal-sm space-y-1">
+                            <div class="flex items-center gap-1.5 text-sky text-xs font-black uppercase tracking-wider">
+                                <span class="material-symbols-outlined text-[18px]">school</span>
+                                <span>Institusi / Fakultas</span>
+                            </div>
+                            <p class="text-sm sm:text-base font-extrabold text-black pl-6">
                                 {{ $dokumen->institution }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="mt-8">
-                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Format PDF, Siap diunduh</h3>
-                        <a href="{{ route('dokumen.download', $dokumen->slug) }}" target="_blank" class="group relative w-full flex justify-center py-4 px-4 border border-transparent font-bold rounded-xl text-white bg-amber-500 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-lg hover:shadow-xl transition-all active:scale-95 overflow-hidden">
-                            <span class="absolute inset-0 w-full h-full bg gradient-to-br from-amber-400 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                            <span class="relative flex items-center">
-                                <svg class="w-6 h-6 mr-2 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                Download PDF
+                    <!-- Download Section -->
+                    <div class="pt-4 border-t-2 border-black space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold text-neutral-600">
+                            <span class="flex items-center gap-1">
+                                <span class="size-2 bg-mint rounded-full border border-black inline-block"></span>
+                                Format PDF Tersedia
                             </span>
+                            <span class="font-extrabold text-black bg-neutral-100 px-2 py-0.5 rounded border border-black">
+                                ⚡ {{ $dokumen->downloads ?? 0 }}x Diunduh
+                            </span>
+                        </div>
+
+                        <a href="{{ route('dokumen.download', $dokumen->slug) }}" target="_blank"
+                            class="group w-full py-4 px-6 bg-saweria hover:bg-saweria-hover text-black font-black text-base uppercase rounded-2xl border-3 border-black shadow-brutal hover:translate-x-1 hover:translate-y-1 hover:shadow-none active:translate-x-1 active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <span class="material-symbols-outlined text-2xl font-bold group-hover:animate-bounce">download</span>
+                            <span>UNDUH DOKUMEN PDF</span>
                         </a>
                     </div>
                 </div>
 
-                <div class="px-6 py-8 lg:p-10 lg:col-span-2">
-                    <div class="prose prose-blue max-w-none">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center pb-4 border-b border-gray-100">
-                            <svg class="w-7 h-7 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
-                            Abstrak / Ringkasan
-                        </h2>
-                        <div class="text-gray-700 text-lg leading-8 text-justify font-light tracking-wide">
-                            {!! $dokumen->abstract !!}
+                <!-- Citation / Quick Tip Box -->
+                <div class="p-5 bg-lavender border-3 border-black rounded-2xl shadow-brutal space-y-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">💡</span>
+                        <h4 class="font-black text-black text-xs uppercase tracking-wider">Panduan Sitasi</h4>
+                    </div>
+                    <p class="text-xs font-semibold text-neutral-800 leading-relaxed">
+                        Gunakan dokumen ini untuk kepentingan riset, karya tulis, dan sitasi akademik dengan mencantumkan nama penulis serta institusi terkait.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Column: Abstract & Full Text Preview (7 cols) -->
+            <div class="lg:col-span-7">
+                <div class="bg-white border-3 border-black rounded-3xl shadow-brutal-lg p-6 sm:p-10 space-y-6">
+                    
+                    <!-- Abstract Header -->
+                    <div class="flex items-center justify-between pb-4 border-b-3 border-black">
+                        <div class="flex items-center gap-2">
+                            <div class="size-9 bg-saweria border-2 border-black rounded-xl shadow-brutal-sm flex items-center justify-center">
+                                <span class="material-symbols-outlined text-xl font-bold">description</span>
+                            </div>
+                            <h2 class="text-xl sm:text-2xl font-black text-black tracking-tight">
+                                Abstrak &amp; Ringkasan
+                            </h2>
                         </div>
+                        <span class="hidden sm:inline-block px-2.5 py-1 bg-pinkpop text-black text-[11px] font-black uppercase rounded-lg border border-black shadow-brutal-sm">
+                            Official Archive
+                        </span>
+                    </div>
+
+                    <!-- Abstract Content -->
+                    <div class="text-neutral-800 text-sm sm:text-base leading-relaxed text-justify font-medium space-y-4">
+                        {!! nl2br(e($dokumen->abstract)) !!}
+                    </div>
+
+                    <!-- Document Metadata Footer Strip -->
+                    <div class="pt-6 mt-6 border-t-2 border-black flex flex-wrap items-center justify-between gap-4 text-xs font-bold text-neutral-600">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">verified</span>
+                            <span>Status: Published (Open Access)</span>
+                        </div>
+                        
+                        <a href="{{ route('home') }}" class="font-black text-black hover:underline flex items-center gap-1">
+                            <span>Jelajahi Dokumen Lainnya</span>
+                            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        </a>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

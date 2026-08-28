@@ -25,15 +25,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // --- DAFTARKAN OBSERVER DI SINI ---
-        
-        // Daftarkan AuditObserver untuk setiap Model yang memiliki kolom user_id
-        // Ini mengaktifkan fitur Audit Trail otomatis.
-        // User::observe(AuditObserver::class);
-        // Role::observe(AuditObserver::class);
-        // Repository::observe(AuditObserver::class);
-        // Category::observe(AuditObserver::class); // <-- DAFTARKAN CATEGORY DI SINI
-        
-        // -------------------------------------
+        // --- GATES AUTHORIZATION UNTUK ADMIN PANEL ---
+        \Illuminate\Support\Facades\Gate::define('access-admin', function (User $user) {
+            return in_array($user->role, ['admin', 'editor']);
+        });
+
+        \Illuminate\Support\Facades\Gate::define('admin-only', function (User $user) {
+            return $user->role === 'admin';
+        });
     }
 }

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Brutal Shadow -->
+  <rect x="7" y="7" width="52" height="52" rx="14" fill="#000000" />
+  <!-- Main Badge Box (Saweria Yellow) -->
+  <rect x="4" y="4" width="52" height="52" rx="14" fill="#FFE600" stroke="#000000" stroke-width="4" stroke-linejoin="round" />
+  <!-- Open Book Icon -->
+  <path d="M16 22 C20 18, 28 19, 31 23 C34 19, 42 18, 46 22 V42 C42 38, 34 39, 31 43 C28 39, 20 38, 16 42 Z" fill="#FFFFFF" stroke="#000000" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Center Book Spine -->
+  <path d="M31 23 V43" stroke="#000000" stroke-width="3.5" stroke-linecap="round" />
+  <!-- Page Lines Left -->
+  <line x1="21" y1="28" x2="26" y2="28" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="21" y1="34" x2="26" y2="34" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+  <!-- Page Lines Right -->
+  <line x1="36" y1="28" x2="41" y2="28" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="36" y1="34" x2="41" y2="34" stroke="#000000" stroke-width="2.5" stroke-linecap="round" />
+</svg>

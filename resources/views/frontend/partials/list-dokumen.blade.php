@@ -1,75 +1,77 @@
 @if ($dokumens->count() > 0)
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        @foreach ($dokumens as $item)
-            <div
-                class="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-                <div class="p-6 grow relative">
-                    <div class="absolute top-0 inset-x-0 h-1 bg-blue-600 group-hover:bg-amber-500 transition-colors">
+        @foreach ($dokumens as $index => $item)
+            @php
+                $badgeColors = ['bg-saweria', 'bg-mint', 'bg-sky', 'bg-lavender', 'bg-pinkpop', 'bg-peach'];
+                $cardBadgeColor = $badgeColors[$index % count($badgeColors)];
+            @endphp
+            <div class="card-brutal bg-white border-3 border-black rounded-2xl shadow-brutal-md p-6 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <!-- Badge & Year -->
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="inline-flex items-center px-3 py-1 {{ $cardBadgeColor }} text-black text-xs font-black uppercase rounded-lg border-2 border-black shadow-brutal-sm whitespace-nowrap">
+                            {{ $item->category->name ?? 'Dokumen' }}
+                        </span>
+                        <span class="px-2.5 py-0.5 bg-[#FAF7EE] text-black text-xs font-black rounded-md border-2 border-black flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">calendar_month</span>
+                            <span>{{ $item->year }}</span>
+                        </span>
                     </div>
 
-                    <div class="flex items-center gap-x-3 text-xs mb-4">
-                        @php
-                            $badgeColor = match ($item->category) {
-                                'Jurnal' => 'bg-green-50 text-green-700 ring-green-600/20',
-                                'Tesis' => 'bg-purple-50 text-purple-700 ring-purple-600/20',
-                                default => 'bg-blue-50 text-blue-700 ring-blue-600/20', // Skripsi dll
-                            };
-                        @endphp
-                        <span
-                            class="inline-flex items-center rounded-md {{ $badgeColor }} px-2 py-1 text-xs font-medium ring-1 ring-inset">
-                            {{ $item->category }}
-                        </span>
-                        <span class="text-gray-500 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            {{ $item->year }}
-                        </span>
-                    </div>
-                    <h3
-                        class="mt-2 text-xl font-bold text-gray-900 leading-snug group-hover:text-blue-700 transition-colors line-clamp-2">
-                        <a href="{{ route('dokumen.show', $item->id) }}">
+                    <!-- Title -->
+                    <h3 class="text-lg font-black text-black leading-snug line-clamp-2">
+                        <a href="{{ route('dokumen.show', $item->slug) }}" class="hover:underline decoration-saweria decoration-4">
                             {{ $item->title }}
                         </a>
                     </h3>
-                    <p class="mt-3 text-sm text-gray-600 line-clamp-3 leading-relaxed">
-                        {{ $item->abstract }}
+
+                    <!-- Abstract -->
+                    <p class="text-xs sm:text-sm font-semibold text-neutral-600 line-clamp-3 leading-relaxed">
+                        {{ strip_tags($item->abstract) }}
                     </p>
 
-                    <div class="mt-6 pt-4 border-t border-gray-50 flex items-center">
-                        <div
-                            class="shrink-0 h-10 w-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold">
-                            {{ substr($item->author, 0, 1) }} </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-900 line-clamp-1">{{ $item->authors }}</p>
-                            <p class="text-xs text-gray-500 line-clamp-1">{{ $item->institution }}</p>
+                    <!-- Author & Institution -->
+                    <div class="space-y-2 pt-2">
+                        <div class="flex items-center gap-2 p-2 bg-[#FAF7EE] border border-black rounded-xl text-xs font-bold text-neutral-800">
+                            <span class="material-symbols-outlined text-[16px] text-coral">person</span>
+                            <span class="truncate">{{ $item->author }}</span>
+                        </div>
+                        <div class="flex items-center gap-2 p-2 bg-[#FAF7EE] border border-black rounded-xl text-xs font-bold text-neutral-800">
+                            <span class="material-symbols-outlined text-[16px] text-sky">school</span>
+                            <span class="truncate">{{ $item->institution }}</span>
                         </div>
                     </div>
                 </div>
-                <div
-                    class="bg-gray-50 px-6 py-4 rounded-b-2xl border-t border-gray-100 group-hover:bg-blue-50 transition-colors">
-                    <a href="{{ route('dokumen.show', $item->id) }}"
-                        class="text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center justify-between w-full">
-                        Buka Dokumen Lengkap
-                        <svg class="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
+
+                <!-- Footer Action -->
+                <div class="pt-5 mt-5 border-t-2 border-black flex items-center justify-between gap-3">
+                    <span class="inline-flex items-center gap-1 text-[11px] font-extrabold text-neutral-600">
+                        <span class="material-symbols-outlined text-[16px]">download</span>
+                        <span>{{ $item->downloads ?? 0 }} Unduhan</span>
+                    </span>
+
+                    <a href="{{ route('dokumen.show', $item->slug) }}"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 bg-saweria hover:bg-saweria-hover text-black text-xs font-black uppercase rounded-xl border-2 border-black shadow-brutal-sm hover:-translate-y-0.5 hover:shadow-brutal active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all">
+                        <span>Buka Dokumen</span>
+                        <span class="material-symbols-outlined text-[16px]">arrow_outward</span>
                     </a>
                 </div>
             </div>
         @endforeach
     </div>
 
-    <div class="mt-8">
+    <div class="mt-8 flex justify-center">
         {{ $dokumens->withQueryString()->links() }}
     </div>
 @else
-    <div class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
-        <p class="text-gray-500">Tidak ada dokumen ditemukan.</p>
-        <a href="{{ route('home') }}" class="text-blue-600 text-sm hover:underline mt-2 inline-block">Reset
-            Pencarian</a>
+    <div class="text-center py-16 px-6 bg-white border-3 border-black rounded-3xl shadow-brutal-lg max-w-lg mx-auto space-y-4">
+        <div class="size-16 bg-coral border-3 border-black rounded-2xl shadow-brutal mx-auto flex items-center justify-center text-3xl">
+            🔍
+        </div>
+        <h3 class="text-xl font-black text-black">Dokumen Tidak Ditemukan</h3>
+        <p class="text-xs sm:text-sm font-semibold text-neutral-600">Coba kata kunci lain atau reset pencarian Anda.</p>
+        <a href="{{ route('home') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-saweria text-black font-black text-xs uppercase rounded-xl border-2 border-black shadow-brutal hover:-translate-y-0.5 transition-all">
+            Reset Pencarian
+        </a>
     </div>
 @endif
