@@ -18,8 +18,10 @@ Route::get('/dokumen/{slug}', [PublicController::class, 'show'])->name('dokumen.
 Route::get('/download/{slug}', [PublicController::class, 'download'])->name('dokumen.download');
 
 // ==========================================
-// 2. CUSTOM ADMIN PANEL (Saweria Neobrutalism)
+// 2. AUTH REDIRECT & CUSTOM ADMIN PANEL
 // ==========================================
+Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
+
 Route::prefix('admin')->name('admin.')->group(function () {
 
     // Guest Routes (Login)
